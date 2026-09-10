@@ -227,7 +227,8 @@ const dlCv = document.getElementById("dl");
 function drawDl(){
   const H = Math.max(190, Math.min(250, dlCv.parentNode.clientWidth * 0.30));
   const { g, w, h } = hidpi(dlCv, H);
-  const L = 40, R = 132, T = 12, B = 26;
+  const narrow = w < 560;
+  const L = 40, R = narrow ? 84 : 132, T = 12, B = 26;
   const x0 = L, x1 = w - R, y0 = T, y1 = h - B;
   const X = i => x0 + (x1 - x0) * i / (YEARS.length - 1);
   const Y = f => y1 - f * (y1 - y0);
@@ -253,7 +254,8 @@ function drawDl(){
     const s = shares[li][ci], mid = acc + s / 2; acc += s;
     if (s < 0.05) return;
     g.fillStyle = cv(DLCOL[code]); g.fillRect(x1 + 6, Y(mid) - 4, 8, 8);
-    g.fillStyle = cv("--muted"); g.fillText(DLNAME[code], x1 + 19, Y(mid) + 3.5);
+    g.fillStyle = cv("--muted");
+    g.fillText(narrow ? code : DLNAME[code], x1 + 19, Y(mid) + 3.5);
   });
   g.textAlign = "right"; g.fillStyle = cv("--faint"); g.font = '10px "IBM Plex Mono", monospace';
   [0, .5, 1].forEach(f => g.fillText(Math.round(f * 100) + "%", x0 - 7, Y(f) + 3.5));
