@@ -1,0 +1,333 @@
+<title>Right of Way</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#EDE9E1; --surface:#F7F4EE; --raise:#FFFFFF; --sunk:#E6E1D7;
+    --ink:#1B1815; --muted:#6C665C; --faint:#948D80; --line:#D9D2C6; --line-2:#C9C1B2;
+    --accent:#B0392C; --accent-soft:#F0DED9;
+    --c-all:#7C8A99; --c-dmg:#B0392C; --c-sub:#6B3E8F; --c-eff:#B8892B; --c-rate:#2C7D77;
+    --gold:#B8892B;
+    --shadow:0 1px 2px rgba(27,24,21,.05),0 14px 40px rgba(27,24,21,.09);
+    --r:16px; --r-sm:10px;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --paper:#15120F; --surface:#1D1A15; --raise:#242019; --sunk:#100E0B;
+    --ink:#EEE8DC; --muted:#9C9486; --faint:#6E675B; --line:#2C2820; --line-2:#3A352B;
+    --accent:#E0705F; --accent-soft:#2A1A16;
+    --c-all:#93A4B4; --c-dmg:#E0705F; --c-sub:#B98FE0; --c-eff:#D4A64A; --c-rate:#4FAFA6;
+    --gold:#D4A64A;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 46px rgba(0,0,0,.45);
+  }}
+  :root[data-theme="dark"]{
+    --paper:#15120F; --surface:#1D1A15; --raise:#242019; --sunk:#100E0B;
+    --ink:#EEE8DC; --muted:#9C9486; --faint:#6E675B; --line:#2C2820; --line-2:#3A352B;
+    --accent:#E0705F; --accent-soft:#2A1A16;
+    --c-all:#93A4B4; --c-dmg:#E0705F; --c-sub:#B98FE0; --c-eff:#D4A64A; --c-rate:#4FAFA6;
+    --gold:#D4A64A;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 46px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);font-family:"Archivo",system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:900px;margin:0 auto;padding:26px 22px 60px;position:relative;}
+  .serif{font-family:"Fraunces","Georgia",serif;}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;}
+
+  /* ── masthead ─────────────────────────────────────────────────────────── */
+  .masthead{border-bottom:2.5px solid var(--ink);padding-bottom:16px;margin-bottom:6px;}
+  .eyebrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-right:46px;font-family:"IBM Plex Mono",monospace;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+  .eyebrow .accent{color:var(--accent);font-weight:600;}
+  h1.title{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(40px,9vw,74px);line-height:.94;letter-spacing:-.025em;
+    margin:14px 0 8px;text-wrap:balance;}
+  h1.title em{font-style:italic;color:var(--accent);}
+  .dek{font-family:"Fraunces",serif;font-size:clamp(16px,2.4vw,20px);font-weight:400;color:var(--muted);max-width:60ch;line-height:1.42;}
+  .themebtn{position:absolute;top:26px;right:22px;background:var(--surface);border:1px solid var(--line);color:var(--muted);
+    width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:15px;}
+
+  .stripe{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);
+    border-radius:var(--r-sm);overflow:hidden;margin:20px 0 4px;}
+  .stripe > div{background:var(--surface);padding:12px 14px;}
+  .stripe .v{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:600;letter-spacing:-.02em;}
+  .stripe .k{font-size:11px;color:var(--faint);line-height:1.35;margin-top:3px;}
+  @media (max-width:640px){.stripe{grid-template-columns:repeat(2,1fr);}}
+
+  .sec-label{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);
+    display:flex;align-items:center;gap:10px;margin:38px 2px 14px;}
+  .sec-label::after{content:"";flex:1;height:1px;background:var(--line);}
+  .sec-label .num{color:var(--accent);font-weight:600;}
+
+  p.body{font-size:15px;color:var(--muted);max-width:68ch;margin:0 0 14px;line-height:1.62;}
+  p.body b{color:var(--ink);font-weight:600;}
+  p.body .fig{font-family:"IBM Plex Mono",monospace;color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px;}
+  .card + .card{margin-top:14px;}
+
+  /* ── lens buttons ─────────────────────────────────────────────────────── */
+  .lenses{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .lens{border:1px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 13px;
+    font-family:"Archivo",sans-serif;font-weight:600;font-size:12.5px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:7px;}
+  .lens:hover{border-color:var(--accent);}
+  .lens .sw{width:10px;height:10px;border-radius:3px;background:var(--lc);flex:none;transition:opacity .15s;}
+  .lens .sw.dashed, .lrow .nm .sw.dashed{
+    background:repeating-linear-gradient(90deg,var(--lc) 0 3px,transparent 3px 5.5px);}
+  .lens[aria-pressed="false"]{color:var(--faint);}
+  .lens[aria-pressed="false"] .sw{opacity:.22;}
+  .lens[aria-pressed="true"]{border-color:var(--lc);}
+
+  .chartwrap{position:relative;}
+  .chartwrap canvas{display:block;width:100%;}
+  .axmode{display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:8px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--faint);}
+  .seg{display:inline-flex;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;}
+  .seg button{border:0;background:var(--surface);color:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:11px;
+    letter-spacing:.04em;padding:5px 10px;cursor:pointer;}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);}
+  .tip{position:absolute;pointer-events:none;background:var(--raise);border:1px solid var(--line-2);border-radius:9px;
+    box-shadow:var(--shadow);padding:9px 11px;font-size:12px;min-width:150px;opacity:0;transition:opacity .12s;z-index:5;}
+  .tip .yr{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;color:var(--faint);margin-bottom:5px;}
+  .tip .row{display:flex;justify-content:space-between;gap:14px;align-items:center;}
+  .tip .row .nm{display:flex;align-items:center;gap:6px;}
+  .tip .row .sw{width:8px;height:8px;border-radius:2px;}
+  .tip .row .vv{font-family:"IBM Plex Mono",monospace;font-weight:600;}
+
+  .caption{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:12px;max-width:74ch;}
+  .caption b{color:var(--ink);}
+
+  /* ── threshold ladder ─────────────────────────────────────────────────── */
+  .ladder{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;}
+  .lrow{background:var(--surface);display:grid;grid-template-columns:1fr 150px 124px;gap:14px;align-items:center;padding:13px 16px;}
+  .lrow.head{background:var(--sunk);font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--faint);}
+  .lrow .nm{display:flex;align-items:baseline;gap:9px;min-width:0;}
+  .lrow .nm .sw{width:10px;height:10px;border-radius:3px;background:var(--lc);flex:none;align-self:center;}
+  .lrow .nm .t{font-weight:700;font-size:14px;}
+  .lrow .nm .d{font-size:11.5px;color:var(--faint);}
+  .lrow .spark{height:30px;min-width:0;}
+  .lrow .spark canvas{display:block;width:100%;}
+  .lrow .chg{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:15px;text-align:right;}
+  .lrow .chg.up{color:var(--accent);} .lrow .chg.dn{color:var(--c-rate);}
+  .lrow .chg small{display:block;font-size:9.5px;letter-spacing:.06em;color:var(--faint);font-weight:500;line-height:1.5;}
+  .lrow .chg small + small{opacity:.72;}
+  @media (max-width:700px){.lrow{grid-template-columns:1fr 110px;}.lrow .spark{display:none;}}
+
+  /* ── hazard scatter ───────────────────────────────────────────────────── */
+  .hz{position:relative;}
+  .hzlegend{display:flex;flex-wrap:wrap;gap:14px;font-size:11.5px;color:var(--muted);margin-top:10px;align-items:center;}
+  .hzlegend .dot{display:inline-block;border-radius:50%;background:var(--faint);vertical-align:middle;margin-right:5px;}
+  .quadnote{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+
+  /* ── tables ───────────────────────────────────────────────────────────── */
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);background:var(--surface);}
+  table{border-collapse:collapse;width:100%;min-width:620px;font-size:13px;}
+  th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
+  th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surface);}
+  thead th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);
+    font-weight:600;border-bottom:1.5px solid var(--line-2);cursor:pointer;user-select:none;}
+  thead th:hover{color:var(--accent);}
+  thead th[aria-sort]{color:var(--ink);}
+  thead th[aria-sort]::after{content:" ▾";color:var(--accent);}
+  thead th[aria-sort="ascending"]::after{content:" ▴";}
+  tbody td.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;}
+  tbody tr:hover td{background:var(--sunk);}
+  tbody tr:hover td:first-child{background:var(--sunk);}
+  tbody .nm{display:inline-flex;align-items:center;gap:8px;font-weight:600;}
+  tbody .nm .sz{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.06em;color:var(--faint);
+    border:1px solid var(--line-2);border-radius:4px;padding:1px 4px;}
+  tr:last-child td{border-bottom:none;}
+  .bar{position:relative;}
+  .bar i{position:absolute;left:0;top:50%;transform:translateY(-50%);height:60%;background:var(--accent-soft);border-radius:3px;z-index:0;}
+  .bar span{position:relative;z-index:1;}
+
+  /* ── incident log ─────────────────────────────────────────────────────── */
+  .log{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;}
+  .ev{background:var(--surface);padding:14px 17px;}
+  .ev .top{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-bottom:5px;}
+  .ev .dt{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;color:var(--accent);font-weight:600;}
+  .ev .wh{font-weight:700;font-size:14px;}
+  .ev .meta{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--faint);letter-spacing:.04em;}
+  .ev .tag{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+    border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;color:var(--muted);}
+  .ev .tag.bad{border-color:var(--accent);color:var(--accent);}
+  .ev .rem{font-size:12.5px;color:var(--muted);line-height:1.6;}
+  .ev .rem:empty::after{content:"No remarks were filed.";color:var(--faint);font-style:italic;}
+
+  /* ── altitude column ──────────────────────────────────────────────────── */
+  .alt{display:grid;grid-template-columns:70px 1fr 64px;gap:10px;align-items:center;font-size:12.5px;}
+  .alt .lab{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--faint);text-align:right;}
+  .alt .tr{height:15px;background:var(--sunk);border-radius:4px;overflow:hidden;position:relative;}
+  .alt .fl{height:100%;background:var(--c-all);border-radius:4px;transition:width .9s cubic-bezier(.2,.8,.2,1);}
+  .alt .fd{position:absolute;left:0;top:0;height:100%;background:var(--c-dmg);border-radius:4px;transition:width .9s cubic-bezier(.2,.8,.2,1);}
+  .alt .pc{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);text-align:right;}
+
+  /* ── airport lookup ───────────────────────────────────────────────────── */
+  .search{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+  .search input{flex:1;min-width:220px;background:var(--raise);border:1px solid var(--line-2);border-radius:10px;padding:10px 13px;
+    font-family:"Archivo",sans-serif;font-size:14px;color:var(--ink);}
+  .search input:focus{outline:none;border-color:var(--accent);}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{border:1px solid var(--line-2);background:var(--surface);color:var(--muted);border-radius:999px;padding:5px 11px;
+    font-family:"IBM Plex Mono",monospace;font-size:11px;cursor:pointer;}
+  .chip:hover{border-color:var(--accent);color:var(--ink);}
+  .apcard{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:640px){.apcard{grid-template-columns:1fr;}}
+  .apstat{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);
+    border-radius:var(--r-sm);overflow:hidden;}
+  .apstat > div{background:var(--raise);padding:10px 12px;}
+  .apstat .v{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:600;}
+  .apstat .k{font-size:10.5px;color:var(--faint);margin-top:2px;}
+  .splist{margin-top:12px;}
+  .splist .r{display:grid;grid-template-columns:1fr 46px;gap:10px;align-items:center;font-size:12.5px;padding:4px 0;}
+  .splist .r .t{position:relative;}
+  .splist .r .t i{position:absolute;inset:0;background:var(--accent-soft);border-radius:3px;z-index:0;}
+  .splist .r .t span{position:relative;z-index:1;padding:2px 5px;display:inline-block;}
+  .splist .r .c{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);text-align:right;}
+
+  /* ── methods ──────────────────────────────────────────────────────────── */
+  .methods{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;box-shadow:var(--shadow);}
+  .methods h3{font-family:"Fraunces",serif;font-size:17px;font-weight:600;margin:0 0 4px;}
+  .methods h3:not(:first-child){margin-top:20px;}
+  .methods p{font-size:13.5px;color:var(--muted);margin:0 0 4px;line-height:1.62;max-width:72ch;}
+  .methods p b{color:var(--ink);font-weight:600;}
+  .methods code{font-family:"IBM Plex Mono",monospace;font-size:12px;background:var(--sunk);padding:1px 5px;border-radius:4px;}
+  .methods a{color:var(--accent);}
+
+  .foot{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);line-height:1.7;}
+  .foot a{color:var(--muted);}
+</style>
+
+<div class="wrap">
+  <button class="themebtn" id="themebtn" title="Toggle theme">◐</button>
+
+  <header class="masthead">
+    <div class="eyebrow">
+      <span>A Quick Project</span>
+      <span class="accent">FAA Wildlife Strike Database</span>
+    </div>
+    <h1 class="title">Right of <em>Way</em></h1>
+    <p class="dek">Reported collisions between American aircraft and American wildlife have risen eightfold
+      since 1990. Five stricter ways of counting the same thing are carried alongside it, and every one of
+      them rises less — the growth is almost entirely in the reports where nothing happened.</p>
+  </header>
+
+  <div class="stripe" id="stripe"></div>
+  <p class="caption" id="stripecap"></p>
+
+  <!-- 01 ────────────────────────────────────────────────────────────────── -->
+  <div class="sec-label"><span class="num">01</span> The count, and five ways to check it</div>
+  <p class="body">Every point on the top line is a wildlife strike somebody filled in a form about.
+    The trouble with counting forms is that you are counting the forms. Filing one has been voluntary
+    for civil operators for the whole period, and the effort put into collecting them has changed
+    enormously — so a rising count is consistent with more strikes, with more reporting, or with both.</p>
+  <p class="body">Two different checks are drawn over it. The obvious one is <b>exposure</b>: divide by how
+    much anyone flew, and see whether the risk per departure moved. The less obvious one, and the one that
+    does the real work here, is a <b>severity threshold</b> — keep re-counting the same database under
+    definitions that are progressively harder to slip past. A strike that <b>changed what the flight did</b>
+    leaves an operational trace whether or not anyone files. One that <b>damaged the aircraft</b> is harder
+    to leave unreported than a smear on a radome. One that was <b>substantial, or destroyed the aircraft</b>,
+    is nearly impossible to lose.</p>
+  <p class="body">Order the six series by how hard each is to under-report and they line up almost perfectly
+    by how fast they grew. Exposure alone barely dents it. Severity dissolves it.</p>
+
+  <div class="card">
+    <div class="lenses" id="lenses"></div>
+    <div class="chartwrap" id="mainwrap">
+      <canvas id="main" height="380"></canvas>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="axmode">
+      <span>scale</span>
+      <span class="seg" id="axseg">
+        <button data-m="index" aria-pressed="true">index, 1990–94 = 100</button>
+        <button data-m="count" aria-pressed="false">absolute count</button>
+      </span>
+    </div>
+    <p class="caption" id="maincap"></p>
+  </div>
+
+  <!-- 02 ────────────────────────────────────────────────────────────────── -->
+  <div class="sec-label"><span class="num">02</span> The steeper the threshold, the flatter the trend</div>
+  <p class="body">The same database counted six ways, comparing the mean of the first five years on record
+    with the mean of the most recent five complete ones. Read top to bottom. This is the whole argument on
+    one screen.</p>
+  <div class="ladder" id="ladder"></div>
+  <p class="caption" id="laddercap"></p>
+
+  <p class="body" style="margin-top:26px">One of those rows cannot be taken at face value, and the honest
+    thing is to show you why rather than hope you do not check. The bottom row — <b>substantial or
+    destroyed</b> — is the only series that falls, and a large part of that fall is the FAA changing how it
+    grades damage, not aircraft being damaged less. Below is every damaging strike, split by the grade it
+    was given.</p>
+  <div class="card">
+    <div class="chartwrap"><canvas id="dl" height="240"></canvas></div>
+    <p class="caption" id="dlcap"></p>
+  </div>
+
+  <!-- 03 ────────────────────────────────────────────────────────────────── -->
+  <div class="sec-label"><span class="num">03</span> What actually changed: who files, and who identifies</div>
+  <p class="body">If the rise is reporting rather than risk, the reporting should show its own fingerprints —
+    and it does. The channel the reports arrive through has been rebuilt underneath the count: a paper form
+    mailed in, replaced by one that can be filed from a phone at the gate before the aircraft has finished
+    taxiing. Whatever else that changed, it did not change the number of birds.</p>
+  <div class="card">
+    <div class="chartwrap"><canvas id="src" height="300"></canvas></div>
+    <p class="caption" id="srccap"></p>
+  </div>
+  <div class="card">
+    <div class="chartwrap"><canvas id="ident" height="220"></canvas></div>
+    <p class="caption" id="identcap"></p>
+  </div>
+
+  <!-- 04 ────────────────────────────────────────────────────────────────── -->
+  <div class="sec-label"><span class="num">04</span> The hazard board</div>
+  <p class="body">Which animals matter is not the same question as which animals get hit. Every identified
+    species is placed by how often it is struck and how often that strike damages the aircraft. The two are
+    close to unrelated, and the species in the top-right corner are not the ones anyone would name first.</p>
+  <div class="card">
+    <div class="chartwrap hz" id="hzwrap">
+      <canvas id="hz" height="420"></canvas>
+      <div class="tip" id="hztip"></div>
+    </div>
+    <div class="hzlegend" id="hzlegend"></div>
+    <p class="caption" id="hzcap"></p>
+  </div>
+  <div class="tablewrap" style="margin-top:14px"><table id="sptab"><thead></thead><tbody></tbody></table></div>
+  <p class="caption" id="sptabcap"></p>
+
+  <!-- 05 ────────────────────────────────────────────────────────────────── -->
+  <div class="sec-label"><span class="num">05</span> <span id="logcount">Some</span> of them, in full</div>
+  <p class="body">Everything above is a count, which makes it easy to forget what is being counted.
+    These are the costliest strikes in the file and every strike in it that killed someone, in the words
+    of whoever filled in the form.</p>
+  <div class="log" id="log"></div>
+
+  <!-- 06 ────────────────────────────────────────────────────────────────── -->
+  <div class="sec-label"><span class="num">06</span> Where in the flight</div>
+  <p class="body">Height above ground, where the report gives one. Almost everything happens in the first
+    few hundred feet — which is the airport's problem, and therefore something an airport can do something
+    about. The share that does damage moves the other way.</p>
+  <div class="card"><div id="altchart"></div><p class="caption" id="altcap"></p></div>
+  <div class="card"><div id="phasechart"></div><p class="caption" id="phasecap"></p></div>
+
+  <!-- 07 ────────────────────────────────────────────────────────────────── -->
+  <div class="sec-label"><span class="num">07</span> Your airport</div>
+  <p class="body">Reports are attributed to an airport where one is known. A big number here is not a
+    dangerous airport — it is very often a well-run one, because a wildlife programme is exactly the thing
+    that turns a strike nobody would have mentioned into a filed report.</p>
+  <div class="card">
+    <div class="search">
+      <input id="apq" type="text" placeholder="Airport code or name — DFW, Denver, Kennedy…" autocomplete="off" spellcheck="false">
+      <div class="chips" id="apchips"></div>
+    </div>
+    <div id="apout"></div>
+  </div>
+
+  <!-- 08 ────────────────────────────────────────────────────────────────── -->
+  <div class="sec-label"><span class="num">08</span> Method, and what this cannot tell you</div>
+  <div class="methods" id="methods"></div>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<script id="payload" type="application/json">__PAYLOAD__</script>
